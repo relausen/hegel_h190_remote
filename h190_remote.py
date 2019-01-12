@@ -35,6 +35,9 @@ class H190RemoteController:
 		ON = auto()
 		OFF = auto()
 
+	def __init__(self):
+		socket.setdefaulttimeout(2.0)
+
 	def _exchange_data(self, command, parameter):
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			s.connect((HOST, PORT))
