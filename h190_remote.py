@@ -1,6 +1,8 @@
 import ui
+import re
 import dialogs
 import telnetlib
+import socket
 from enum import Enum, auto
 
 HOST = "192.168.123.12"
@@ -34,18 +36,19 @@ class H190RemoteController:
 		ON = auto()
 		OFF = auto()
 
-	def __init__(self, telnet_connection):
-		self.__telnet_connection = telnet_connection
+	def _exchange_data(self, command, parameter):
+		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+			s.connect((HOST, PORT))
+			s.sendall(b"-%s.%s\r" % (command, parameter))
+			reply = s.recv(64)
+			current = re.match(b'-%s\\.([0-9]+)' % command, reply)
+			return current[1]
 
 	def __status_request(self, command):
-		self.__telnet_connection.write(b"-%s.?\r" % command)
-		_, match, _ = self.__telnet_connection.expect([b"-%s\.([0-9]+)" % command])
-		return match[1].decode("utf-8")
+		return self._exchange_data(command, b'?').decode('utf-8')
 
 	def __send_command(self, command, parameter):
-		self.__telnet_connection.write(b"-%s.%s\r" % (command, parameter))
-		_, match, _ = self.__telnet_connection.expect([b"-%s\.([0-9]+)" % command])
-		return match[1].decode("utf-8")
+		return self._exchange_data(command, parameter).decode('utf-8')
 
 	def current_input(self):
 		return int(self.__status_request(self.__COMMANDS["source_input"]))
@@ -133,8 +136,9 @@ class ViewController:
 
 if __name__ == '__main__':
 	try:
-		tn = telnetlib.Telnet(HOST, PORT, timeout=5)
-		h190_remote = H190RemoteController(tn)
+		#tn = telnetlib.Telnet(HOST, PORT, timeout=5)
+		h190_remote = H190RemoteController()
 		ViewController(h190_remote).present_view('fullscreen')
+		#tn.close()
 	except Exception as e:
 		dialogs.alert('Error', message=str(e))
