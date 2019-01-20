@@ -2,10 +2,11 @@ import ui
 import re
 import dialogs
 import socket
+from objc_util import *
 from enum import Enum, auto
 
-HOST = "192.168.123.12"
-PORT = 50001
+
+NSUserDefaults = ObjCClass('NSUserDefaults')
 
 class H190RemoteController:
 	_COMMANDS = {
@@ -35,12 +36,14 @@ class H190RemoteController:
 		ON = auto()
 		OFF = auto()
 
-	def __init__(self):
+	def __init__(self, host):
 		socket.setdefaulttimeout(2.0)
+		self._host = host
+		self._port = 50001
 
 	def _exchange_data(self, command, parameter):
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-			s.connect((HOST, PORT))
+			s.connect((self._host, self._port))
 			s.sendall(b"-%s.%s\r" % (command, parameter))
 			reply = s.recv(64)
 			current = re.match(b'-%s\\.([0-9]+)' % command, reply)
@@ -97,7 +100,7 @@ class ViewController:
 		}
 		self.view = ui.load_view(bindings=view_bindings)
 		self.remote_controller = remote_controller
-
+		
 		self._setup_view()
 
 	def _setup_view(self):
@@ -138,7 +141,16 @@ class ViewController:
 
 if __name__ == '__main__':
 	try:
-		h190_remote = H190RemoteController()
+		_defaults = NSUserDefaults.standardUserDefaults()
+
+		_host = _defaults.stringForKey_('host')
+		if not _host:
+			_host = dialogs.text_dialog('enter host')
+			if not _host:
+				raise Exception('No host set')
+
+		_defaults.setObject_forKey_(_host, 'host')
+		h190_remote = H190RemoteController(str(_host))
 		ViewController(h190_remote).present_view('fullscreen')
 	except Exception as e:
 		dialogs.alert('Error', message=str(e))
