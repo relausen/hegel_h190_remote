@@ -36,12 +36,14 @@ class H190RemoteController:
 		ON = auto()
 		OFF = auto()
 
-	def __init__(self, host):
+	def __init__(self):
 		socket.setdefaulttimeout(2.0)
-		self._host = host
+		self._host = None
 		self._port = 50001
 
 	def _exchange_data(self, command, parameter):
+		if self._host is None:
+			raise Exception('Host not set')
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			s.connect((self._host, self._port))
 			s.sendall(b"-%s.%s\r" % (command, parameter))
@@ -89,6 +91,19 @@ class H190RemoteController:
 		state_string = b'1' if state is self.SwitchState.ON else b'0'
 		return self._send_command(self._COMMANDS['power'], state_string)
 
+	def set_host(self, host):
+		self._host = host
+
+	def host(self):
+		return self._host
+
+	def is_reachable(self, host):
+		try:
+			ip = socket.gethostbyname(host)
+		except:
+			return False
+		else:
+			return True
 
 class ViewController:
 	def __init__(self, remote_controller):
@@ -96,14 +111,20 @@ class ViewController:
 			'mute_action': self._mute_action,
 			'change_volume_action': self._change_volume_action,
 			'set_volume_action': self._set_volume_action,
-			'power_action': self._power_action
+			'power_action': self._power_action,
+			'address_changed': self._address_changed,
 		}
 		self.view = ui.load_view(bindings=view_bindings)
 		self.remote_controller = remote_controller
+		self._defaults = NSUserDefaults.standardUserDefaults()
 		
 		self._setup_view()
 
 	def _setup_view(self):
+		host = self._defaults.stringForKey_('host')
+		if host:
+			self.view['address'].text = str(host)
+			self.remote_controller.set_host(str(host))
 		self.view.flex = 'WH'
 		self.view["current_input"].text = H190RemoteController.INPUTS[self.remote_controller.current_input()]
 		self.view["current_volume"].text = str(self.remote_controller.current_volume())
@@ -113,6 +134,14 @@ class ViewController:
 			v.action = self._input_select_action
 			v.input_number = i
 			v.title = H190RemoteController.INPUTS[i]
+
+	def _address_changed(self, sender):
+		host = sender.text
+		if self.remote_controller.is_reachable(host):
+			self.remote_controller.set_host(host)
+			self._defaults.setObject_forKey_(host, 'host')
+		else:
+			dialogs.hud_alert(f'{host} not reachable', icon='error')
 
 	def _input_select_action(self, sender):
 		new_input = self.remote_controller.change_input(sender.input_number)
@@ -141,16 +170,7 @@ class ViewController:
 
 if __name__ == '__main__':
 	try:
-		_defaults = NSUserDefaults.standardUserDefaults()
-
-		_host = _defaults.stringForKey_('host')
-		if not _host:
-			_host = dialogs.text_dialog('enter host')
-			if not _host:
-				raise Exception('No host set')
-
-		_defaults.setObject_forKey_(_host, 'host')
-		h190_remote = H190RemoteController(str(_host))
+		h190_remote = H190RemoteController()
 		ViewController(h190_remote).present_view('fullscreen')
 	except Exception as e:
 		dialogs.alert('Error', message=str(e))

@@ -8,13 +8,13 @@
         "frame" : "{{35, 6}, {118, 32}}",
         "class" : "Label",
         "attributes" : {
-          "name" : "input_label",
+          "font_size" : 18,
           "frame" : "{{85, 224}, {150, 32}}",
           "uuid" : "2023CA54-F0D9-4819-88C3-BE43BD00841B",
           "class" : "Label",
           "alignment" : "center",
           "text" : "Input",
-          "font_size" : 18,
+          "name" : "input_label",
           "font_name" : "<System-Bold>"
         },
         "selected" : false
@@ -32,8 +32,8 @@
           "class" : "Label",
           "alignment" : "center",
           "text" : "Volume",
-          "name" : "volume_label",
-          "font_size" : 18
+          "font_size" : 18,
+          "name" : "volume_label"
         },
         "selected" : false
       },
@@ -44,13 +44,13 @@
         "frame" : "{{35, 46}, {118, 32}}",
         "class" : "Label",
         "attributes" : {
-          "name" : "current_input",
+          "font_size" : 18,
           "frame" : "{{85, 224}, {150, 32}}",
           "uuid" : "779DFC76-7EB3-4516-B9D9-9A7D7C848187",
           "class" : "Label",
           "alignment" : "center",
           "text" : "",
-          "font_size" : 18,
+          "name" : "current_input",
           "font_name" : "<System>"
         },
         "selected" : false
@@ -69,8 +69,8 @@
           "class" : "Label",
           "alignment" : "center",
           "text" : "",
-          "name" : "current_volume",
-          "font_size" : 18
+          "font_size" : 18,
+          "name" : "current_volume"
         },
         "selected" : false
       },
@@ -81,13 +81,13 @@
         "frame" : "{{298, 6}, {103, 32}}",
         "class" : "Label",
         "attributes" : {
-          "font_size" : 18,
+          "name" : "power_label",
           "frame" : "{{85, 224}, {150, 32}}",
           "uuid" : "2023CA54-F0D9-4819-88C3-BE43BD00841B",
           "class" : "Label",
           "alignment" : "center",
           "text" : "Power",
-          "name" : "power_label",
+          "font_size" : 18,
           "font_name" : "<System-Bold>"
         },
         "selected" : false
@@ -121,8 +121,8 @@
           "title" : "",
           "uuid" : "EEF0440A-91A6-465F-AE27-8F81564BAF2D",
           "class" : "Button",
-          "name" : "volume_up",
-          "font_size" : 15
+          "font_size" : 15,
+          "name" : "volume_up"
         },
         "selected" : false
       },
@@ -139,8 +139,8 @@
           "title" : "",
           "uuid" : "EEF0440A-91A6-465F-AE27-8F81564BAF2D",
           "class" : "Button",
-          "name" : "volume_down",
-          "font_size" : 15
+          "font_size" : 15,
+          "name" : "volume_down"
         },
         "selected" : false
       },
@@ -291,7 +291,7 @@
             "selected" : false
           }
         ],
-        "frame" : "{{35, 86}, {118, 396}}",
+        "frame" : "{{35, 86}, {118, 360}}",
         "class" : "View",
         "attributes" : {
           "action" : "test_action",
@@ -384,13 +384,13 @@
         "frame" : "{{175, 86}, {45, 32}}",
         "class" : "Label",
         "attributes" : {
-          "font_size" : 18,
+          "name" : "label1",
           "frame" : "{{309, 496}, {150, 32}}",
           "uuid" : "61602ABB-1FBE-4EE6-B98C-E1817BB35532",
           "class" : "Label",
           "alignment" : "left",
           "text" : "Mute",
-          "name" : "label1",
+          "font_size" : 18,
           "font_name" : "<System>"
         },
         "selected" : false
@@ -410,6 +410,47 @@
           "uuid" : "28F88464-3FBC-4F33-A851-DC97224D7CFF"
         },
         "selected" : false
+      },
+      {
+        "nodes" : [
+
+        ],
+        "frame" : "{{175, 414}, {226, 32}}",
+        "class" : "TextField",
+        "attributes" : {
+          "uuid" : "FC3C723A-661A-4205-B524-7667063D3125",
+          "font_size" : 17,
+          "frame" : "{{123, 263}, {200, 32}}",
+          "secure" : false,
+          "action" : "address_changed",
+          "alignment" : "left",
+          "autocorrection_type" : "no",
+          "placeholder" : "No address set",
+          "font_name" : "<System>",
+          "spellchecking_type" : "no",
+          "class" : "TextField",
+          "name" : "address",
+          "flex" : ""
+        },
+        "selected" : true
+      },
+      {
+        "nodes" : [
+
+        ],
+        "frame" : "{{175, 374}, {150, 32}}",
+        "class" : "Label",
+        "attributes" : {
+          "name" : "label2",
+          "frame" : "{{148, 263}, {150, 32}}",
+          "uuid" : "235FCD91-D41A-4BA7-9327-594E71C3AB04",
+          "class" : "Label",
+          "alignment" : "left",
+          "text" : "Address",
+          "font_size" : 18,
+          "font_name" : "<System>"
+        },
+        "selected" : false
       }
     ],
     "frame" : "{{0, 0}, {446, 558}}",
@@ -417,9 +458,9 @@
     "attributes" : {
       "name" : "",
       "enabled" : true,
-      "background_color" : "RGBA(1.000000,1.000000,1.000000,1.000000)",
       "tint_color" : "RGBA(0.000000,0.478000,1.000000,1.000000)",
       "border_color" : "RGBA(0.000000,0.000000,0.000000,1.000000)",
+      "background_color" : "RGBA(1.000000,1.000000,1.000000,1.000000)",
       "flex" : ""
     },
     "selected" : false
