@@ -42,8 +42,8 @@ class H190RemoteController:
 		self._port = 50001
 
 	def _exchange_data(self, command, parameter):
-		if self._host is None:
-			raise Exception('Host not set')
+		if not self._host:
+			return
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			s.connect((self._host, self._port))
 			s.sendall(b"-%s.%s\r" % (command, parameter))
@@ -99,7 +99,7 @@ class H190RemoteController:
 
 	def is_reachable(self, host):
 		try:
-			ip = socket.gethostbyname(host)
+			_ = socket.create_connection((host, self._port), timeout=0.5)
 		except:
 			return False
 		else:
@@ -121,19 +121,26 @@ class ViewController:
 		self._setup_view()
 
 	def _setup_view(self):
-		host = self._defaults.stringForKey_('host')
-		if host:
-			self.view['address'].text = str(host)
-			self.remote_controller.set_host(str(host))
+		for i, v in enumerate(self.view['inputs'].subviews, start=1):
+			v.action = self._input_select_action
+			v.input_number = i
+			v.title = H190RemoteController.INPUTS[i]
+		self.view['address'].clear_button_mode = 'always'
+		self.view['address'].autocapitalization_type = ui.AUTOCAPITALIZE_NONE
+		self.view['address'].keyboard_type = ui.KEYBOARD_URL
+		host = str(self._defaults.stringForKey_('host'))
+		if not host:
+			return
+		if not self.remote_controller.is_reachable(host):
+			return
+		self.view['address'].text = host
+		self.remote_controller.set_host(host)
 		self.view.flex = 'WH'
 		self.view["current_input"].text = H190RemoteController.INPUTS[self.remote_controller.current_input()]
 		self.view["current_volume"].text = str(self.remote_controller.current_volume())
 		self.view["power"].value = (self.remote_controller.power_state() is H190RemoteController.SwitchState.ON)
 		self.view["mute"].value = (self.remote_controller.mute_state() is H190RemoteController.SwitchState.ON)
-		for i, v in enumerate(self.view['inputs'].subviews, start=1):
-			v.action = self._input_select_action
-			v.input_number = i
-			v.title = H190RemoteController.INPUTS[i]
+
 
 	def _address_changed(self, sender):
 		host = sender.text
