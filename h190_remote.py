@@ -131,9 +131,9 @@ class ViewController:
 		host = str(self._defaults.stringForKey_('host'))
 		if not host:
 			return
+		self.view['address'].text = host
 		if not self.remote_controller.is_reachable(host):
 			return
-		self.view['address'].text = host
 		self.remote_controller.set_host(host)
 		self.view.flex = 'WH'
 		self.view["current_input"].text = H190RemoteController.INPUTS[self.remote_controller.current_input()]
