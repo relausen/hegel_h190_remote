@@ -8,7 +8,7 @@ from enum import Enum, auto
 
 NSUserDefaults = ObjCClass('NSUserDefaults')
 
-class H190RemoteController:
+class HegelRemoteController:
 	_COMMANDS = {
 		"power": b"p",
 		"source_input": b"i",
@@ -117,14 +117,14 @@ class ViewController:
 		self.view = ui.load_view(bindings=view_bindings)
 		self.remote_controller = remote_controller
 		self._defaults = NSUserDefaults.standardUserDefaults()
-		
+
 		self._setup_view()
 
 	def _setup_view(self):
 		for i, v in enumerate(self.view['inputs'].subviews, start=1):
 			v.action = self._input_select_action
 			v.input_number = i
-			v.title = H190RemoteController.INPUTS[i]
+			v.title = HegelRemoteController.INPUTS[i]
 		self.view['address'].clear_button_mode = 'always'
 		self.view['address'].autocapitalization_type = ui.AUTOCAPITALIZE_NONE
 		self.view['address'].keyboard_type = ui.KEYBOARD_URL
@@ -136,10 +136,10 @@ class ViewController:
 			return
 		self.remote_controller.set_host(host)
 		self.view.flex = 'WH'
-		self.view["current_input"].text = H190RemoteController.INPUTS[self.remote_controller.current_input()]
+		self.view["current_input"].text = HegelRemoteController.INPUTS[self.remote_controller.current_input()]
 		self.view["current_volume"].text = str(self.remote_controller.current_volume())
-		self.view["power"].value = (self.remote_controller.power_state() is H190RemoteController.SwitchState.ON)
-		self.view["mute"].value = (self.remote_controller.mute_state() is H190RemoteController.SwitchState.ON)
+		self.view["power"].value = (self.remote_controller.power_state() is HegelRemoteController.SwitchState.ON)
+		self.view["mute"].value = (self.remote_controller.mute_state() is HegelRemoteController.SwitchState.ON)
 
 
 	def _address_changed(self, sender):
@@ -152,10 +152,10 @@ class ViewController:
 
 	def _input_select_action(self, sender):
 		new_input = self.remote_controller.change_input(sender.input_number)
-		self.view['current_input'].text = H190RemoteController.INPUTS[int(new_input)]
+		self.view['current_input'].text = HegelRemoteController.INPUTS[int(new_input)]
 
 	def _change_volume_action(self, sender):
-		direction = H190RemoteController.VolumeChange.UP if sender.name == 'volume_up' else H190RemoteController.VolumeChange.DOWN
+		direction = HegelRemoteController.VolumeChange.UP if sender.name == 'volume_up' else HegelRemoteController.VolumeChange.DOWN
 		new_volume = self.remote_controller.change_volume(direction)
 		self.view["current_volume"].text = new_volume
 
@@ -164,11 +164,11 @@ class ViewController:
 		self.view["current_volume"].text = new_volume
 
 	def _mute_action(self, sender):
-		new_state = H190RemoteController.SwitchState.ON if sender.value else H190RemoteController.SwitchState.OFF
+		new_state = HegelRemoteController.SwitchState.ON if sender.value else HegelRemoteController.SwitchState.OFF
 		self.remote_controller.mute(new_state)
 
 	def _power_action(self, sender):
-		new_state = H190RemoteController.SwitchState.ON if sender.value else H190RemoteController.SwitchState.OFF
+		new_state = HegelRemoteController.SwitchState.ON if sender.value else HegelRemoteController.SwitchState.OFF
 		self.remote_controller.set_power(new_state)
 
 	def present_view(self, style='default'):
@@ -177,7 +177,7 @@ class ViewController:
 
 if __name__ == '__main__':
 	try:
-		h190_remote = H190RemoteController()
-		ViewController(h190_remote).present_view('fullscreen')
+		hegel_remote = HegelRemoteController()
+		ViewController(hegel_remote).present_view('fullscreen')
 	except Exception as e:
 		dialogs.alert('Error', message=str(e))
